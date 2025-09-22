@@ -7,12 +7,10 @@
 <meta content="Admin & Dashboards Template" name="description" />
 <meta content="Pixeleyez" name="author" />
 
-<!-- Ultra Performance Optimization -->
-<link rel="stylesheet" href="assets/css/ultra-light.css">
-<script src="assets/js/asset-optimizer.js"></script>
-<script src="assets/js/ultra-performance.js"></script>
-<script src="assets/js/smart-asset-loader.js"></script>
-<script src="assets/js/cleanup-scripts.js"></script>
+<!-- App CSS -->
+<link rel="stylesheet" href="assets/css/app.min.css">
+<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+<link rel="stylesheet" href="assets/css/icons.min.css">
 
 <!-- App favicon -->
 <link rel="shortcut icon" href="assets/images/k_favicon_32x.png">
@@ -37,6 +35,11 @@
             @include('partials.footer')
 
             @include('partials.vendor-scripts')
+
+            <!-- App JavaScript -->
+            <script src="assets/js/app.js"></script>
+            <script src="assets/js/layout-setup.js"></script>
+            <script src="assets/js/plugins.js"></script>
 
             @yield('js')
 
