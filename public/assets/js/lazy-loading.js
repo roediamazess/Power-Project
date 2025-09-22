@@ -57,19 +57,22 @@ function initializeLazyLoading() {
     });
 }
 
-// Preload critical resources
+// Preload only critical CSS resources
 function preloadCriticalResources() {
     const criticalResources = [
         'assets/css/app.min.css',
-        'assets/css/bootstrap.min.css',
-        'assets/js/app.js'
+        'assets/css/bootstrap.min.css'
     ];
     
     criticalResources.forEach(resource => {
         const link = document.createElement('link');
         link.rel = 'preload';
         link.href = resource;
-        link.as = resource.endsWith('.css') ? 'style' : 'script';
+        link.as = 'style';
+        link.onload = function() {
+            this.onload = null;
+            this.rel = 'stylesheet';
+        };
         document.head.appendChild(link);
     });
 }

@@ -240,15 +240,45 @@ function removeHorizontalAttributes() {
     });
 }
 
+// Set current year without document.write
+function setCurrentYear() {
+    const yearElement = document.getElementById('current-year');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
+}
+
+// Optimize resource loading
+function optimizeResourceLoading() {
+    // Remove unused preloads
+    const preloadLinks = document.querySelectorAll('link[rel="preload"]');
+    preloadLinks.forEach(link => {
+        const href = link.href;
+        if (href.includes('app.js') && !document.querySelector(`script[src="${href}"]`)) {
+            // Convert preload to actual script loading
+            const script = document.createElement('script');
+            script.src = href;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+            link.remove();
+        }
+    });
+}
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initializeOptimizedApp();
         optimizedLayoutSetup();
+        setCurrentYear();
+        optimizeResourceLoading();
     });
 } else {
     initializeOptimizedApp();
     optimizedLayoutSetup();
+    setCurrentYear();
+    optimizeResourceLoading();
 }
 
 // Export functions for global use

@@ -9,6 +9,7 @@
 
 <!-- Performance optimized scripts -->
 <link rel="stylesheet" href="assets/css/performance-optimized.css">
+<script src="assets/js/cleanup-scripts.js"></script>
 <script type="module" src="assets/js/performance-optimized.js"></script>
 <script type="module" src="assets/js/lazy-loading.js"></script>
 
