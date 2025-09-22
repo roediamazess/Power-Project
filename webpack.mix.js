@@ -45,12 +45,12 @@ mix.webpackConfig({
 });
 
 // Handle SCSS files with proper error handling
-mix.sass(path.join(folder.src_assets, 'scss/app.scss'), 'assets/css/app.min.css')
-   .sass(path.join(folder.src_assets, 'scss/bootstrap.scss'), 'assets/css/bootstrap.min.css')
-   .sass(path.join(folder.src_assets, 'scss/icons.scss'), 'assets/css/icons.min.css')
-   .options({
-       processCssUrls: false // Important: Don't process URLs to preserve font paths
-   });
+// mix.sass(path.join(folder.src_assets, 'scss/app.scss'), 'assets/css/app.min.css')
+//    .sass(path.join(folder.src_assets, 'scss/bootstrap.scss'), 'assets/css/bootstrap.min.css')
+//    .sass(path.join(folder.src_assets, 'scss/icons.scss'), 'assets/css/icons.min.css')
+//    .options({
+//        processCssUrls: false // Important: Don't process URLs to preserve font paths
+//    });
 
 // Create destination directories before copying (to prevent EPERM errors)
 const ensureDirectoriesExist = () => {
