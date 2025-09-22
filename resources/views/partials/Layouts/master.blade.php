@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="assets/css/ultra-light.css">
 <script src="assets/js/asset-optimizer.js"></script>
 <script src="assets/js/ultra-performance.js"></script>
+<script src="assets/js/smart-asset-loader.js"></script>
 <script src="assets/js/cleanup-scripts.js"></script>
 
 <!-- App favicon -->
