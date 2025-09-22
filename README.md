@@ -43,11 +43,21 @@ docker compose exec node npm install
 - **Website**: http://localhost:8000
 - **Database**: localhost:5432
 - **Redis**: localhost:6379
+- **Adminer (Database Admin)**: http://localhost:8080
 
 ## 🔐 Default Login
 
+### Website Login
 - **Email**: admin@powerproject.com
 - **Password**: admin123
+
+### Database Admin (Adminer)
+- **URL**: http://localhost:8080
+- **System**: PostgreSQL
+- **Server**: db
+- **Username**: power_user
+- **Password**: power_password
+- **Database**: power_project
 
 ## 🐳 Docker Services
 
@@ -56,6 +66,7 @@ docker compose exec node npm install
 - **db**: PostgreSQL database (port 5432)
 - **redis**: Redis cache (port 6379)
 - **node**: Node.js for frontend assets
+- **adminer**: Database administration (port 8080)
 
 ## 📁 Project Structure
 

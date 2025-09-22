@@ -67,6 +67,17 @@ services:
     networks:
       - power-project-network
 
+  adminer:
+    image: adminer:latest
+    container_name: power-project-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - power-project-network
+    depends_on:
+      - db
+
 volumes:
   postgres_data:
     driver: local
