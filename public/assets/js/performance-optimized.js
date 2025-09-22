@@ -30,20 +30,44 @@ function throttle(func, limit) {
     };
 }
 
-// Optimized scroll handler with requestAnimationFrame
+// Ultra-optimized scroll handler with caching
 function optimizedScrollHandler() {
     let ticking = false;
+    let lastScrollY = 0;
+    let stickyOffset = null;
+    let stickyMenu = null;
+    
+    // Cache elements and values
+    function cacheElements() {
+        stickyMenu = document.getElementById("appHeader");
+        if (stickyMenu) {
+            stickyOffset = stickyMenu.offsetTop;
+        }
+    }
     
     function updateScrollPosition() {
-        const stickyMenu = document.getElementById("appHeader");
-        if (!stickyMenu) return;
+        if (!stickyMenu || stickyOffset === null) {
+            cacheElements();
+            if (!stickyMenu) return;
+        }
         
-        const stickyOffset = stickyMenu.offsetTop;
+        const currentScrollY = window.scrollY;
         
-        if (window.scrollY > stickyOffset) {
-            stickyMenu.classList.add("sticky-scroll");
-        } else {
-            stickyMenu.classList.remove("sticky-scroll");
+        // Only update if scroll direction changed significantly
+        if (Math.abs(currentScrollY - lastScrollY) > 5) {
+            const shouldStick = currentScrollY > stickyOffset;
+            const isCurrentlySticky = stickyMenu.classList.contains("sticky-scroll");
+            
+            // Only update DOM if state actually changed
+            if (shouldStick !== isCurrentlySticky) {
+                if (shouldStick) {
+                    stickyMenu.classList.add("sticky-scroll");
+                } else {
+                    stickyMenu.classList.remove("sticky-scroll");
+                }
+            }
+            
+            lastScrollY = currentScrollY;
         }
         
         ticking = false;
@@ -121,7 +145,7 @@ function initializeOptimizedApp() {
     });
 }
 
-// Optimized layout setup
+// Ultra-optimized layout setup with batching
 function optimizedLayoutSetup() {
     const htmlElement = document.documentElement;
     
@@ -137,32 +161,49 @@ function optimizedLayoutSetup() {
         { attribute: "data-theme-colors", defaultValue: "default" },
     ];
     
-    // Use requestAnimationFrame to batch DOM updates
+    // Batch all attribute changes
+    const attributeChanges = [];
+    const radioUpdates = [];
+    
+    settings.forEach((setting) => {
+        const savedValue = localStorage.getItem(setting.attribute);
+        const valueToApply = savedValue || setting.defaultValue;
+        
+        attributeChanges.push({ attribute: setting.attribute, value: valueToApply });
+        
+        if (setting.attribute === "dir") {
+            updateLayoutDir(valueToApply);
+        } else if (setting.attribute === "data-bs-theme") {
+            setTheme(valueToApply);
+        }
+        
+        const radioSelector = `input[name="${setting.attribute}"][value="${valueToApply}"]`;
+        const radioElement = document.querySelector(radioSelector);
+        if (radioElement) {
+            radioUpdates.push(radioElement);
+        }
+    });
+    
+    // Apply all attribute changes at once
     requestAnimationFrame(() => {
-        settings.forEach((setting) => {
-            const savedValue = localStorage.getItem(setting.attribute);
-            const valueToApply = savedValue || setting.defaultValue;
-            
-            htmlElement.setAttribute(setting.attribute, valueToApply);
-            
-            if (setting.attribute === "dir") {
-                updateLayoutDir(valueToApply);
-            } else if (setting.attribute === "data-bs-theme") {
-                setTheme(valueToApply);
-            }
-            
-            const radioSelector = `input[name="${setting.attribute}"][value="${valueToApply}"]`;
-            const radioElement = document.querySelector(radioSelector);
-            if (radioElement) {
-                radioElement.checked = true;
-            }
+        // Batch attribute updates
+        attributeChanges.forEach(({ attribute, value }) => {
+            htmlElement.setAttribute(attribute, value);
         });
         
-        updateSimpleBar(htmlElement.getAttribute("data-layout"));
+        // Batch radio button updates
+        radioUpdates.forEach(radio => {
+            radio.checked = true;
+        });
         
-        if (htmlElement.getAttribute("data-layout") === "horizontal") {
-            removeHorizontalAttributes();
-        }
+        // Defer heavy operations
+        requestAnimationFrame(() => {
+            updateSimpleBar(htmlElement.getAttribute("data-layout"));
+            
+            if (htmlElement.getAttribute("data-layout") === "horizontal") {
+                removeHorizontalAttributes();
+            }
+        });
     });
 }
 
@@ -204,32 +245,44 @@ function updateLayoutDir(value) {
     });
 }
 
-// Optimized SimpleBar update
+// Optimized SimpleBar update with requestAnimationFrame
 function updateSimpleBar(value) {
-    // Use setTimeout to avoid blocking the main thread
-    setTimeout(() => {
+    // Use requestAnimationFrame for better performance
+    requestAnimationFrame(() => {
         const sidebarSimpleBarMenu = document.getElementById('sidebar-simplebar');
         if (!sidebarSimpleBarMenu) return;
         
         if ((value === "vertical" || value === "horizontal" || value === "semibox") && 
             document.documentElement.getAttribute("data-sidebar") !== "icon") {
             
+            // Batch DOM operations to reduce reflow
+            const fragment = document.createDocumentFragment();
             const allMenus = sidebarSimpleBarMenu.querySelector('ul.pe-main-menu');
+            
             if (allMenus) {
-                sidebarSimpleBarMenu.innerHTML = allMenus.parentElement.innerHTML;
+                // Clone content to avoid reflow
+                const clonedContent = allMenus.parentElement.cloneNode(true);
+                fragment.appendChild(clonedContent);
+                
+                // Single DOM update
+                sidebarSimpleBarMenu.innerHTML = '';
+                sidebarSimpleBarMenu.appendChild(fragment);
             }
             
             sidebarSimpleBarMenu.setAttribute('data-simplebar', '');
             
-            if (window.SimpleBar) {
-                try {
-                    new SimpleBar(sidebarSimpleBarMenu);
-                } catch (error) {
-                    console.warn('SimpleBar initialization failed:', error);
+            // Initialize SimpleBar in next frame to avoid blocking
+            requestAnimationFrame(() => {
+                if (window.SimpleBar) {
+                    try {
+                        new SimpleBar(sidebarSimpleBarMenu);
+                    } catch (error) {
+                        console.warn('SimpleBar initialization failed:', error);
+                    }
                 }
-            }
+            });
         }
-    }, 0);
+    });
 }
 
 // Remove horizontal attributes
